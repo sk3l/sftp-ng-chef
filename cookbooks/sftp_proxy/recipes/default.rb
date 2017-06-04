@@ -4,6 +4,8 @@
 #
 # Copyright:: 2017, The Authors, All Rights Reserved.
 include_recipe 'openssh'
+include_recipe 'firewalld'
+include_recipe 'selinux_policy::install'
 
 # Create directory tree under /opt/bb
 directory '/opt/bb/etc/sftp-ng' do
@@ -37,6 +39,16 @@ template '/opt/bb/etc/sftp-ng/sshd_config' do
       })
 end
 
+firewalld_port '2245/tcp' do
+     action :add
+     zone   'home'
+end
+
+selinux_policy_port node['network']['port'] do
+   protocol 'tcp'
+   secontext 'ssh_port_t'
+end
+
 # Create custom systemd unit controlling our SFTP-dedicated sshd
 systemd_unit 'sftp-ng-proxy.service' do
    content <<-EOU.gsub(/^\s+/, '')
@@ -45,14 +57,14 @@ systemd_unit 'sftp-ng-proxy.service' do
       After=network.target
    [Service]
       Type=forking
-      EnvironmentFile=/opt/bb/etc/sshd
+      EnvironmentFile=/opt/bb/etc/sshd_env
       PIDFile=/var/run/sftp-ng-proxy.pid
-      ExecStart=/usr/sbin/sshd -D $SSHD_OPTS 
+      ExecStart=/usr/sbin/sshd $SSHD_OPTS 
       ExecReload=/bin/kill -HUP $MAINPID
       KillMode=process
       Restart=on-failure
       EOU
 
-   user 'root'
-   action [:create, :enable]
+   #user 'root'
+   action [:create, :enable, :reload, :start]
 end

@@ -1,5 +1,6 @@
 source 'https://supermarket.chef.io'
 
 metadata
-
-#cookbook    'openssh',  '~> 0.1.0'
+cookbook       'openssh',        '~> 2.4.1'
+cookbook       'firewalld',      '~> 1.1.5'
+cookbook       'selinux_policy', '~> 2.0.1'

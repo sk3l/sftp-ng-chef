@@ -18,5 +18,6 @@ version           '0.1.0'
 #
 # source_url 'https://github.com/<insert_org_here>/sftp_proxy' if respond_to?(:source_url)
 
-depends           'openssh', '~>2.1.1'
-#cookbook    'openssh',  '~> 0.1.0'
+depends  'openssh',        '~> 2.4.1'
+depends  'firewalld',      '~> 1.1.5'
+depends  'selinux_policy', '~> 2.0.1'
