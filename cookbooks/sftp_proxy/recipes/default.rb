@@ -63,8 +63,12 @@ systemd_unit 'sftp-ng-proxy.service' do
       ExecReload=/bin/kill -HUP $MAINPID
       KillMode=process
       Restart=on-failure
+   [Install]
+      WantedBy=multi-user.target
+      Alias=sftppxy.service
       EOU
 
    #user 'root'
-   action [:create, :enable, :reload, :start]
+   action [:create, :start, :enable]
 end
+
